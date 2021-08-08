@@ -12,7 +12,7 @@ BOT_NAME = "youtube_scraper"
 SPIDER_MODULES = ["youtube_scraper.spiders"]
 NEWSPIDER_MODULE = "youtube_scraper.spiders"
 
-SPLASH_URL = "http://192.168.0.1:8050"
+SPLASH_URL = "http://127.0.0.1:8050"
 DUPEFILTER_CLASS = "scrapy_splash.SplashAwareDupeFilter"
 HTTPCACHE_STORAGE = "scrapy_splash.SplashAwareFSCacheStorage"
 
