@@ -12,13 +12,25 @@ class YoutubeSpider(scrapy.Spider):
         "DUPEFILTER_CLASS": "scrapy.dupefilters.BaseDupeFilter",
     }
 
+    splash_script = """
+    function main(splash)
+      splash:set_user_agent(splash.args.ua)
+      assert(splash:go(splash.args.url))
+
+      while not splash:select('.my-element') do
+	splash:wait(0.1)
+      end
+      return {html=splash:html()}
+    end
+    """
+
     def start_requests(self):
         for url in self.start_urls:
             yield SplashRequest(
                 url,
                 self.parse,
                 cookies={"CONSENT": "YES+"},
-                args={"wait": 1.5},  # don't brute force wait for elm
+                args={"lua_source": "splash_script"},  # don't brute force wait for elm
             )
 
     def parse(self, response):
@@ -54,4 +66,6 @@ class YoutubeSpider(scrapy.Spider):
         next_video = response.xpath('//*[@id="dismissible"]/div/div[1]/a//@href').get()
         if next_video is not None:
             next_video = response.urljoin(next_video)
-            yield SplashRequest(next_video, self.parse, args={"wait": 1.5})
+            yield SplashRequest(
+                next_video, self.parse, args={"lua_source": "splash_script"}
+            )
