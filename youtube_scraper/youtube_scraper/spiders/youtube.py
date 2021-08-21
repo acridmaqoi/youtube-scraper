@@ -14,12 +14,13 @@ class YoutubeSpider(scrapy.Spider):
 
     splash_script = """
     function main(splash)
-      splash:set_user_agent(splash.args.ua)
+      splash:set_user_agent('Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:53.0) Gecko/20100101 Firefox/53.0')
       assert(splash:go(splash.args.url))
-
-      while not splash:select('.my-element') do
-	splash:wait(0.1)
+      
+      while not splash:select('#dismissible > div > div.metadata.style-scope.ytd-compact-video-renderer > a') do
+        splash:wait(0.001)
       end
+
       return {html=splash:html()}
     end
     """
@@ -29,8 +30,10 @@ class YoutubeSpider(scrapy.Spider):
             yield SplashRequest(
                 url,
                 self.parse,
-                cookies={"CONSENT": "YES+"},
-                args={"lua_source": "splash_script"},  # don't brute force wait for elm
+                endpoint="execute",
+                args={
+                    "lua_source": self.splash_script
+                },  # don't brute force wait for elm
             )
 
     def parse(self, response):
@@ -67,5 +70,8 @@ class YoutubeSpider(scrapy.Spider):
         if next_video is not None:
             next_video = response.urljoin(next_video)
             yield SplashRequest(
-                next_video, self.parse, args={"lua_source": "splash_script"}
+                next_video,
+                self.parse,
+                endpoint="execute",
+                args={"lua_source": self.splash_script},
             )
