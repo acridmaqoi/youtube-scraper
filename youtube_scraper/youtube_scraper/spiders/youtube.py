@@ -7,6 +7,10 @@ class YoutubeSpider(scrapy.Spider):
     allowed_domains = ["youtube.com"]
     start_urls = ["https://www.youtube.com/watch?v=Ebme2W0yF18"]
 
+    # splash auth
+    http_user = "user"
+    http_pass = "userpass"
+
     custom_settings = {
         # find a way to pick another video if the first one has already been scraped
         "DUPEFILTER_CLASS": "scrapy.dupefilters.BaseDupeFilter",
