@@ -30,7 +30,7 @@ class YoutubeSpider(scrapy.Spider):
 
     def __init__(self, start_url, **kw):
         super().__init__(**kw)
-        self.url = satrt_url
+        self.url = start_url
 
     def start_requests(self):
         yield SplashRequest(
