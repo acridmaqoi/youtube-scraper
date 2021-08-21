@@ -5,7 +5,6 @@ from scrapy_splash import SplashRequest
 class YoutubeSpider(scrapy.Spider):
     name = "youtube"
     allowed_domains = ["youtube.com"]
-    start_urls = ["https://www.youtube.com/watch?v=Ebme2W0yF18"]
 
     # splash auth
     http_user = "user"
@@ -29,14 +28,17 @@ class YoutubeSpider(scrapy.Spider):
     end
     """
 
+    def __init__(self, start_url, **kw):
+        super().__init__(**kw)
+        self.url = satrt_url
+
     def start_requests(self):
-        for url in self.start_urls:
-            yield SplashRequest(
-                url,
-                self.parse,
-                endpoint="execute",
-                args={"lua_source": self.splash_script},
-            )
+        yield SplashRequest(
+            self.url,
+            self.parse,
+            endpoint="execute",
+            args={"lua_source": self.splash_script},
+        )
 
     def parse(self, response):
         # from scrapy.shell import inspect_response
