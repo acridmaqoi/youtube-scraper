@@ -31,9 +31,7 @@ class YoutubeSpider(scrapy.Spider):
                 url,
                 self.parse,
                 endpoint="execute",
-                args={
-                    "lua_source": self.splash_script
-                },  # don't brute force wait for elm
+                args={"lua_source": self.splash_script},
             )
 
     def parse(self, response):
