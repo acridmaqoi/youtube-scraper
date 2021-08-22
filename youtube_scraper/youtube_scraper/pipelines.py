@@ -7,6 +7,10 @@
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
 import psycopg2
+import logging
+
+logger = logging.getLogger()
+logger.setLevel(logging.DEBUG)
 
 
 class YoutubeScraperPipeline:
@@ -46,20 +50,24 @@ class YoutubeScraperPipeline:
         video = ItemAdapter(item)
 
         with self.conn.cursor() as cur:
-            cur.execute(
-                f"INSERT INTO {self.table_name} VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                (
-                    video.get("video_id"),
-                    video.get("url"),
-                    video.get("embed_url"),
-                    video.get("name"),
-                    video.get("description"),
-                    video.get("thumbnail_url"),
-                    video.get("channel"),
-                    video.get("date_published"),
-                    video.get("genre"),
-                ),
-            )
-            self.conn.commit()
+            try:
+                cur.execute(
+                    f"INSERT INTO {self.table_name} VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    (
+                        video.get("video_id"),
+                        video.get("url"),
+                        video.get("embed_url"),
+                        video.get("name"),
+                        video.get("description"),
+                        video.get("thumbnail_url"),
+                        video.get("channel"),
+                        video.get("date_published"),
+                        video.get("genre"),
+                    ),
+                )
+                self.conn.commit()
+            except psycopg2.errors.UniqueViolation:
+                logger.warning("duplicate video")
+                self.conn.rollback()
 
         return item
