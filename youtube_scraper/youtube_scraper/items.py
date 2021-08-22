@@ -1,14 +1,13 @@
-from dataclasses import dataclass
-from datetime import datetime
+from scrapy.item import Item, Field
 
 
-class Video:
-    url: str
-    embed_url: str
-    video_id: str
-    name: str
-    description: str
-    thumbnail_url: str
-    channel: str
-    date_published: datetime
-    genre: str
+class Video(Item):
+    url: Field()
+    embed_url: Field()
+    video_id: Field()
+    name: Field()
+    description: Field()
+    thumbnail_url: Field()
+    channel: Field()
+    date_published: Field()
+    genre: Field()
