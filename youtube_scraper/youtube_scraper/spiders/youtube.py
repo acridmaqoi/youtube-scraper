@@ -1,5 +1,6 @@
 import scrapy
 from scrapy_splash import SplashRequest
+from youtube_scraper.items import Video
 
 
 class YoutubeSpider(scrapy.Spider):
@@ -30,37 +31,27 @@ class YoutubeSpider(scrapy.Spider):
         )
 
     def parse(self, response):
-        # from scrapy.shell import inspect_response
-        # inspect_response(response, self)
-
-        yield {
-            "url": response.url,
-            "embed_url": response.xpath(
-                '//*[@id="watch7-content"]/link[3]//@href'
-            ).get(),
-            "video_id": response.xpath(
+        yield Video(
+            video_id=response.xpath(
                 '//*[@id="watch7-content"]/meta[5]//@content'
             ).get(),
-            "name": response.xpath('//*[@id="watch7-content"]/meta[1]//@content').get(),
-            "description": response.xpath(
+            url=response.url,
+            embed_url=response.xpath('//*[@id="watch7-content"]/link[3]//@href').get(),
+            name=response.xpath('//*[@id="watch7-content"]/meta[1]//@content').get(),
+            description=response.xpath(
                 '//*[@id="watch7-content"]/meta[2]//@content'
             ).get(),
-            "thumbnail": response.xpath(
+            thumbnail_url=response.xpath(
                 '//*[@id="watch7-content"]/span[2]/link//@href'
             ).get(),
-            "channel": response.xpath(
+            channel=response.xpath(
                 '//*[@id="watch7-content"]/span[1]/link[2]//@content'
             ).get(),
-            "date_published": response.xpath(
+            date_published=response.xpath(
                 '//*[@id="watch7-content"]/meta[14]//@content'
             ).get(),
-            "genre": response.xpath(
-                '//*[@id="watch7-content"]/meta[16]//@content'
-            ).get(),
-            "next_video_url": response.xpath(
-                '//*[@id="dismissible"]/div/div[1]/a//@href'
-            ).get(),
-        }
+            genre=response.xpath('//*[@id="watch7-content"]/meta[16]//@content').get(),
+        )
 
         next_video = response.xpath('//*[@id="dismissible"]/div/div[1]/a//@href').get()
         if next_video is not None:

@@ -12,9 +12,16 @@ BOT_NAME = "youtube_scraper"
 SPIDER_MODULES = ["youtube_scraper.spiders"]
 NEWSPIDER_MODULE = "youtube_scraper.spiders"
 
+# SPLASH SETTINGS
 SPLASH_URL = "http://127.0.0.1:8050"
 DUPEFILTER_CLASS = "scrapy_splash.SplashAwareDupeFilter"
 HTTPCACHE_STORAGE = "scrapy_splash.SplashAwareFSCacheStorage"
+
+# DB SETTINGS
+DB_HOST = "localhost"
+DB_PORT = 5432
+DB_USER = "postgres"
+DB_PASS = "mysecretpassword"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -68,9 +75,9 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    'youtube_scraper.pipelines.YoutubeScraperPipeline': 300,
-# }
+ITEM_PIPELINES = {
+    "youtube_scraper.pipelines.YoutubeScraperPipeline": 300,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
