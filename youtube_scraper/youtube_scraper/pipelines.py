@@ -17,15 +17,17 @@ class YoutubeScraperPipeline:
         self.db_host = db_host
         self.db_port = db_port
         self.db_user = db_user
-        self.db_db = db_db
+        self.db_pass = db_pass
+        self.db_name = db_db
 
     @classmethod
     def from_crawler(cls, crawler):
         return cls(
-            db_host=crawler.settings.get("POSTGRES_HOST"),
-            db_port=crawler.settings.get("POSTGRES_PORT"),
-            db_user=crawler.settings.get("POSTGRES_USER"),
-            db_db=crawler.settings.get("POSTGRES_DB"),
+            db_host=crawler.settings.get("DB_HOST"),
+            db_port=crawler.settings.get("DB_PORT"),
+            db_user=crawler.settings.get("DB_USER"),
+            db_pass=crawler.settings.get("DB_PASS"),
+            db_name=crawler.settings.get("DB_NAME"),
         )
 
     def open_spider(self, spider):
@@ -33,7 +35,8 @@ class YoutubeScraperPipeline:
             host=self.db_host,
             port=self.db_port,
             user=self.db_user,
-            database=self.db_db,
+            password=self.db_pass,
+            database=self.db_name,
         )
 
     def close_spider(self, spider):
