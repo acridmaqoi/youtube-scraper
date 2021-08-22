@@ -1,12 +1,14 @@
-# Define here the models for your scraped items
-#
-# See documentation in:
-# https://docs.scrapy.org/en/latest/topics/items.html
-
-import scrapy
+from dataclasses import dataclass
+from datetime import datetime
 
 
-class YoutubeScraperItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class Video:
+    url: str
+    embed_url: str
+    video_id: str
+    name: str
+    description: str
+    thumbnail_url: str
+    channel: str
+    date_published: datetime
+    genre: str
