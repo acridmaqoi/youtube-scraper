@@ -45,6 +45,9 @@ class YoutubeSpider(scrapy.Spider):
             "description": response.xpath(
                 '//*[@id="watch7-content"]/meta[2]//@content'
             ).get(),
+            "thumbnail": response.xpath(
+                '//*[@id="watch7-content"]/span[2]/link//@href'
+            ).get(),
             "channel": response.xpath(
                 '//*[@id="watch7-content"]/span[1]/link[2]//@content'
             ).get(),
