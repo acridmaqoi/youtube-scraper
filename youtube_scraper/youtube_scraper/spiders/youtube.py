@@ -32,16 +32,16 @@ class YoutubeSpider(scrapy.Spider):
 
     def parse(self, response):
         yield Video(
-            url=response.url,
-            embed_url=response.xpath('//*[@id="watch7-content"]/link[3]//@href').get(),
             video_id=response.xpath(
                 '//*[@id="watch7-content"]/meta[5]//@content'
             ).get(),
+            url=response.url,
+            embed_url=response.xpath('//*[@id="watch7-content"]/link[3]//@href').get(),
             name=response.xpath('//*[@id="watch7-content"]/meta[1]//@content').get(),
             description=response.xpath(
                 '//*[@id="watch7-content"]/meta[2]//@content'
             ).get(),
-            thumbnail=response.xpath(
+            thumbnail_url=response.xpath(
                 '//*[@id="watch7-content"]/span[2]/link//@href'
             ).get(),
             channel=response.xpath(
@@ -51,9 +51,6 @@ class YoutubeSpider(scrapy.Spider):
                 '//*[@id="watch7-content"]/meta[14]//@content'
             ).get(),
             genre=response.xpath('//*[@id="watch7-content"]/meta[16]//@content').get(),
-            next_vide_url=response.xpath(
-                '//*[@id="dismissible"]/div/div[1]/a//@href'
-            ).get(),
         )
 
         next_video = response.xpath('//*[@id="dismissible"]/div/div[1]/a//@href').get()

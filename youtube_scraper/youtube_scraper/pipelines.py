@@ -13,12 +13,12 @@ class YoutubeScraperPipeline:
 
     table_name = "video"
 
-    def __init__(self, db_host, db_port, db_user, db_pass, db_db):
+    def __init__(self, db_host, db_port, db_user, db_pass, db_name):
         self.db_host = db_host
         self.db_port = db_port
         self.db_user = db_user
         self.db_pass = db_pass
-        self.db_name = db_db
+        self.db_name = db_name
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -47,18 +47,19 @@ class YoutubeScraperPipeline:
 
         with self.conn.cursor() as cur:
             cur.execute(
-                "INSERT INTO %s VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                f"INSERT INTO {self.table_name} VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
                 (
+                    video.get("video_id"),
                     video.get("url"),
                     video.get("embed_url"),
-                    video.get("video_id"),
                     video.get("name"),
                     video.get("description"),
-                    video.get("tumbnail_url"),
+                    video.get("thumbnail_url"),
                     video.get("channel"),
                     video.get("date_published"),
                     video.get("genre"),
                 ),
             )
+            self.conn.commit()
 
         return item
