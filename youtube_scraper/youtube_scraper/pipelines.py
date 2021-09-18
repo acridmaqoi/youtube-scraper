@@ -5,9 +5,18 @@
 
 
 # useful for handling different item types with a single interface
-from itemadapter import ItemAdapter
-import psycopg2
 import logging
+import json
+from itemadapter import ItemAdapter
+
+from scrapy.exceptions import DropItem
+import psycopg2
+from youtube_transcript_api import YouTubeTranscriptApi as yts
+from youtube_transcript_api._errors import (
+    NoTranscriptFound,
+    TranscriptsDisabled,
+)
+
 
 logger = logging.getLogger()
 logger.setLevel(logging.DEBUG)
@@ -49,10 +58,17 @@ class YoutubeScraperPipeline:
     def process_item(self, item, spider):
         video = ItemAdapter(item)
 
+        try:
+            subs = yts.get_transcript(
+                video.get("video_id"), languages=["zh-CN", "zh-Hans"]
+            )
+        except (NoTranscriptFound, TranscriptsDisabled):
+            raise DropItem(f"Video has no zh subs")
+
         with self.conn.cursor() as cur:
             try:
                 cur.execute(
-                    f"INSERT INTO {self.table_name} VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                    f"INSERT INTO {self.table_name} VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                     (
                         video.get("video_id"),
                         video.get("url"),
@@ -63,11 +79,11 @@ class YoutubeScraperPipeline:
                         video.get("channel"),
                         video.get("date_published"),
                         video.get("genre"),
+                        json.dumps(subs),
                     ),
                 )
                 self.conn.commit()
             except psycopg2.errors.UniqueViolation:
                 logger.warning("duplicate video")
                 self.conn.rollback()
-
         return item

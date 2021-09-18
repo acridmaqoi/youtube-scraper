@@ -21,7 +21,7 @@ HTTPCACHE_STORAGE = "scrapy_splash.SplashAwareFSCacheStorage"
 DB_HOST = "localhost"
 DB_PORT = 5432
 DB_USER = "postgres"
-DB_PASS = "mysecretpassword"
+DB_PASS = "password"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
