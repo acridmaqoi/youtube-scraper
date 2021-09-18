@@ -60,7 +60,7 @@ class YoutubeScraperPipeline:
 
         try:
             subs = yts.get_transcript(
-                video.get("video_id"), languages=["zh-CN"]
+                video.get("video_id"), languages=["zh-CN", "zh-Hans"]
             )
         except (NoTranscriptFound, TranscriptsDisabled):
             raise DropItem(f"Video has no zh subs")
