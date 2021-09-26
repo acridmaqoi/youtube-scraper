@@ -15,7 +15,7 @@ SPIDER_MODULES = ["youtube_scraper.spiders"]
 NEWSPIDER_MODULE = "youtube_scraper.spiders"
 
 # SPLASH SETTINGS
-SPLASH_URL = "http://127.0.0.1:8050"
+SPLASH_URL = getenv("SPLASH_URL", "http://127.0.0.1:8050")
 DUPEFILTER_CLASS = "scrapy_splash.SplashAwareDupeFilter"
 HTTPCACHE_STORAGE = "scrapy_splash.SplashAwareFSCacheStorage"
 
