@@ -23,5 +23,6 @@ COPY youtube_scraper youtube_scraper
 WORKDIR /opt/youtube_scraper
 
 ENV DB_HOST=postgres
+ENV SPLASH_HOST=splash
 
 ENTRYPOINT ["/usr/bin/python3", "/opt/youtube_scraper/run.py"]
