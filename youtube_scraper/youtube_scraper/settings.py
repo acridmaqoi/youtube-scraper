@@ -7,21 +7,25 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
+from os import getenv
+
 BOT_NAME = "youtube_scraper"
 
 SPIDER_MODULES = ["youtube_scraper.spiders"]
 NEWSPIDER_MODULE = "youtube_scraper.spiders"
 
 # SPLASH SETTINGS
-SPLASH_URL = "http://127.0.0.1:8050"
+SPLASH_HOST = getenv("SPLASH_HOST", "127.0.0.1")
+
+SPLASH_URL = f"http://{SPLASH_HOST}:8050"
 DUPEFILTER_CLASS = "scrapy_splash.SplashAwareDupeFilter"
 HTTPCACHE_STORAGE = "scrapy_splash.SplashAwareFSCacheStorage"
 
 # DB SETTINGS
-DB_HOST = "localhost"
-DB_PORT = 5432
-DB_USER = "postgres"
-DB_PASS = "password"
+DB_HOST = getenv("DB_HOST", "localhost")
+DB_PORT = getenv("DB_PORT", 5432)
+DB_USER = getenv("DB_USER", "postgres")
+DB_PASS = getenv("DB_PASS", "password")
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
