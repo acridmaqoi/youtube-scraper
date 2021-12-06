@@ -6,11 +6,13 @@ from scrapy.shell import inspect_response
 from glom import glom
 from glom.core import PathAccessError
 
+from youtube_scraper.youtube_scraper.items import YoutubeVideo
+
 
 class ChannelSpider(scrapy.Spider):
     name = "channel"
     allowed_domains = ["youtube.com"]
-    start_urls = ["https://www.youtube.com/user/CNN/videos"]
+    start_urls = ["https://www.youtube.com/channel/UCVlp63hzHZx0dXSz0wT5LAQ/videos"]
     innertubeApiKey = None
     user_agent = "user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.131 Safari/537.36"
 
@@ -89,6 +91,12 @@ class ChannelSpider(scrapy.Spider):
         ]
 
         for video in videos:
+            video_id = video["videoId"]
+            yield scrapy.Request(
+                f"https://www.youtube.com/watch?v={video_id}",
+                cookies={"CONSENT": "YES+"},
+                callback=self.parse_video,
+            )
             yield {
                 "video_id": video["videoId"],
                 "video_title": video["title"]["runs"][0]["text"],
@@ -125,3 +133,6 @@ class ChannelSpider(scrapy.Spider):
                 ),
                 callback=self.parse_response_context,
             )
+
+    def parse_video(self, response):
+        pass
