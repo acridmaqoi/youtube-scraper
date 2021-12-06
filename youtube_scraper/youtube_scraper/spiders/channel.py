@@ -1,5 +1,4 @@
 import json
-import regex
 
 import scrapy
 from scrapy.http import Response, HtmlResponse
@@ -92,8 +91,8 @@ class ChannelSpider(scrapy.Spider):
         for video in videos:
             yield {
                 "video_id": video["videoId"],
-                "video_title": videos["title"]["runs"][0]["text"],
-                "video_views": videos["viewCountText"]["simpleText"],
+                "video_title": video["title"]["runs"][0]["text"],
+                "video_views": video["viewCountText"]["simpleText"],
                 "video_published": "",
             }
 
