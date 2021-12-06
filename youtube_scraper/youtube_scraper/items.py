@@ -1,13 +1,16 @@
-from scrapy.item import Item, Field
+from dataclasses import dataclass
+from datetime import date
 
 
-class Video(Item):
-    video_id = Field()
-    url = Field()
-    embed_url = Field()
-    name = Field()
-    description = Field()
-    thumbnail_url = Field()
-    channel = Field()
-    date_published = Field()
-    genre = Field()
+@dataclass
+class YoutubeVideo:
+    id: str
+    url: str
+    embed_url: str
+    name: str
+    description: str
+    thumbnail_url: str
+    channel: str
+    published: date
+    views: int
+    genre: str
