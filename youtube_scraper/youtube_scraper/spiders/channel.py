@@ -1,4 +1,5 @@
 import json
+import re
 
 import scrapy
 from scrapy.http import Response, HtmlResponse
@@ -97,12 +98,6 @@ class ChannelSpider(scrapy.Spider):
                 cookies={"CONSENT": "YES+"},
                 callback=self.parse_video,
             )
-            yield {
-                "video_id": video["videoId"],
-                "video_title": video["title"]["runs"][0]["text"],
-                "video_views": video["viewCountText"]["simpleText"],
-                "video_published": "",
-            }
 
         try:
             continuationToken = glom(
@@ -135,4 +130,51 @@ class ChannelSpider(scrapy.Spider):
             )
 
     def parse_video(self, response):
-        pass
+        initalResContext = response.xpath("/html/body").re_first(
+            r"var ytInitialData = ({.*});</script>"
+        )
+
+        video_id = re.search(r'{"videoId":"(.*?)"(,|})', initalResContext).group(1)
+        title = re.search(
+            r'"videoPrimaryInfoRenderer".*?"text":"(.*?)"', initalResContext
+        ).group(1)
+        published = re.search(
+            r'"dateText":{"simpleText":"(.*?)"', initalResContext
+        ).group(1)
+        likes = re.search(r'"label":"(.*?) likes"', initalResContext).group(1)
+        channel = re.search(
+            r'"videoOwnerRenderer".*?"title":{"runs":\[{"text":"(.*?)"',
+            initalResContext,
+        ).group(1)
+        thumbnail_url = re.search(
+            r'thumbnails.*?{.*?},{.*?},{"url":"(.*?)","width":176,"height":176}',
+            initalResContext,
+        ).group(1)
+
+        print(video_id)
+
+        ## ---
+        # initalResContext = json.loads(
+        #    response.xpath("/html/body").re_first(
+        #        r"var ytInitialData = ({.*});</script>"
+        #    )
+        # )
+
+        # video_contents = glom(
+        #    target=initalResContext,
+        #    spec=("contents.twoColumnWatchNextResults.results.results.contents"),
+        # )
+        # print(video_contents)
+
+        # video_primary_info = video_contents[0]["videoPrimaryInfoRenderer"]
+        # video_id = video_primary_info["videoActions"]["menuRenderer"][
+        #    "topLevelButtons"
+        # ][3]["downloadButtonRenderer"]["command"]["offlineVideoEndpoint"]["videoId"]
+
+        # video_id = glom(
+        #    target=video_primary_info,
+        #    spec=(
+        #        "videoActions.menuRenderer.topLevelButtons.3.downloadButtonRenderer.command.offlineVideo"
+        #    ),
+        # )
+        # published = video_primary_info["dateText"]["simpleText"]
