@@ -11,4 +11,3 @@ class YoutubeVideo:
     channel: str
     published: date
     views: int
-    genre: str

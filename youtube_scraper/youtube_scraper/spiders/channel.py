@@ -146,49 +146,34 @@ class ChannelSpider(scrapy.Spider):
             "videoActions.menuRenderer.topLevelButtons.0.toggleButtonRenderer",
         )
 
+        two_column_watch_next_results = glom(
+            inital_res_context, "contents.twoColumnWatchNextResults"
+        )
+
+        #
         video_id = glom(
             toggle_button_renderer,
             "defaultNavigationEndpoint.modalEndpoint.modal.modalWithTitleAndButtonRenderer.button.buttonRenderer.navigationEndpoint.signInEndpoint.nextEndpoint.watchEndpoint.videoId",
         )
 
-        title = video_primary_info_renderer.get("title").get("runs")[0].get("text")
-        published = video_primary_info_renderer.get("dateText").get("simpleText")
-        likes = toggle_button_renderer.get("toggledText").get("simpleText")
+        name = glom(video_primary_info_renderer, "title.runs.0.text")
+        published = glom(video_primary_info_renderer, "dateText.simpleText")
 
-        likes = re.search(r'"label":"(.*?) likes"', inital_res_context).group(1)
-        channel = re.search(
-            r'"videoOwnerRenderer".*?"title":{"runs":\[{"text":"(.*?)"',
-            inital_res_context,
-        ).group(1)
-        thumbnail_url = re.search(
-            r'thumbnails.*?{.*?},{.*?},{"url":"(.*?)","width":176,"height":176}',
-            inital_res_context,
-        ).group(1)
+        description = glom(
+            two_column_watch_next_results,
+            "results.results.contents.1.videoSecondaryInfoRenderer.description.runs.0.text",
+        )
 
-        print(video_id)
+        likes = glom(
+            two_column_watch_next_results,
+            "results.results.contents.0.videoPrimaryInfoRenderer.videoActions.menuRenderer.topLevelButtons.0.toggleButtonRenderer.defaultText.accessibility.accessibilityData.label",
+        )
 
-        ## ---
-        # initalResContext = json.loads(
-        #    response.xpath("/html/body").re_first(
-        #        r"var ytInitialData = ({.*});</script>"
-        #    )
-        # )
-
-        # video_contents = glom(
-        #    target=initalResContext,
-        #    spec=("contents.twoColumnWatchNextResults.results.results.contents"),
-        # )
-        # print(video_contents)
-
-        # video_primary_info = video_contents[0]["videoPrimaryInfoRenderer"]
-        # video_id = video_primary_info["videoActions"]["menuRenderer"][
-        #    "topLevelButtons"
-        # ][3]["downloadButtonRenderer"]["command"]["offlineVideoEndpoint"]["videoId"]
-
-        # video_id = glom(
-        #    target=video_primary_info,
-        #    spec=(
-        #        "videoActions.menuRenderer.topLevelButtons.3.downloadButtonRenderer.command.offlineVideo"
-        #    ),
-        # )
-        # published = video_primary_info["dateText"]["simpleText"]
+        channel = glom(
+            two_column_watch_next_results,
+            "secondaryResults.secondaryResults.results.1.compactVideoRenderer.longBylineText.runs.0.text",
+        )
+        thumbnail_url = glom(
+            two_column_watch_next_results,
+            "secondaryResults.secondaryResults.results.3.compactRadioRenderer.thumbnail.thumbnails.1.url",
+        )
