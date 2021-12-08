@@ -7,8 +7,6 @@ from scrapy.shell import inspect_response
 from glom import glom
 from glom.core import PathAccessError
 
-from youtube_scraper.youtube_scraper.items import YoutubeVideo
-
 
 class ChannelSpider(scrapy.Spider):
     name = "channel"
@@ -130,25 +128,41 @@ class ChannelSpider(scrapy.Spider):
             )
 
     def parse_video(self, response):
-        initalResContext = response.xpath("/html/body").re_first(
-            r"var ytInitialData = ({.*});</script>"
+        inital_res_context = json.loads(
+            response.xpath("/html/body").re_first(
+                r"var ytInitialData = ({.*});</script>"
+            )
         )
 
-        video_id = re.search(r'{"videoId":"(.*?)"(,|})', initalResContext).group(1)
-        title = re.search(
-            r'"videoPrimaryInfoRenderer".*?"text":"(.*?)"', initalResContext
-        ).group(1)
-        published = re.search(
-            r'"dateText":{"simpleText":"(.*?)"', initalResContext
-        ).group(1)
-        likes = re.search(r'"label":"(.*?) likes"', initalResContext).group(1)
+        contents = glom(
+            inital_res_context,
+            "contents.twoColumnWatchNextResults.results.results.contents",
+        )
+
+        video_primary_info_renderer = glom(contents, "0.videoPrimaryInfoRenderer")
+
+        toggle_button_renderer = glom(
+            video_primary_info_renderer,
+            "videoActions.menuRenderer.topLevelButtons.0.toggleButtonRenderer",
+        )
+
+        video_id = glom(
+            toggle_button_renderer,
+            "defaultNavigationEndpoint.modalEndpoint.modal.modalWithTitleAndButtonRenderer.button.buttonRenderer.navigationEndpoint.signInEndpoint.nextEndpoint.watchEndpoint.videoId",
+        )
+
+        title = video_primary_info_renderer.get("title").get("runs")[0].get("text")
+        published = video_primary_info_renderer.get("dateText").get("simpleText")
+        likes = toggle_button_renderer.get("toggledText").get("simpleText")
+
+        likes = re.search(r'"label":"(.*?) likes"', inital_res_context).group(1)
         channel = re.search(
             r'"videoOwnerRenderer".*?"title":{"runs":\[{"text":"(.*?)"',
-            initalResContext,
+            inital_res_context,
         ).group(1)
         thumbnail_url = re.search(
             r'thumbnails.*?{.*?},{.*?},{"url":"(.*?)","width":176,"height":176}',
-            initalResContext,
+            inital_res_context,
         ).group(1)
 
         print(video_id)

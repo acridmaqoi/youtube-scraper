@@ -5,7 +5,6 @@ from datetime import date
 @dataclass
 class YoutubeVideo:
     id: str
-    url: str
     name: str
     description: str
     thumbnail_url: str
